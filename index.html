@@ -3,68 +3,317 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mengenal Budaya Batak</title>
+    <title>Tarik Tambang Matematika</title>
     <style>
-        /* Ini adalah CSS untuk menghias tampilan */
+        /* --- STYLE (CSS) --- */
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
             margin: 0;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Area Tali Tarik Tambang */
+        #rope-container {
+            flex: 0 0 120px;
+            background-color: #333;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 4px solid #222;
+        }
+
+        .rope {
+            width: 80%;
+            height: 10px;
+            background-color: #d4a373;
+            position: relative;
+            border-radius: 5px;
+        }
+
+        .knot {
+            width: 30px;
+            height: 30px;
+            background-color: #e63946;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%; /* Posisi awal di tengah (0) */
+            transform: translate(-50%, -50%);
+            transition: left 0.3s ease-out; /* Animasi pergeseran tali */
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            border: 3px solid #fff;
+        }
+
+        /* Area Pemain */
+        #players-container {
+            display: flex;
+            flex: 1;
+        }
+
+        .player-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        #player1 {
+            background-color: #a8dadc;
+            border-right: 2px dashed #457b9d;
+        }
+
+        #player2 {
+            background-color: #ffcdb2;
+            border-left: 2px dashed #b5838d;
+        }
+
+        .player-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
             color: #333;
         }
-        header {
-            background-color: #800000; /* Warna merah marun khas ulos */
+
+        .question {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .option-btn {
+            font-size: 24px;
+            padding: 15px;
+            cursor: pointer;
+            background-color: #457b9d;
             color: white;
-            text-align: center;
-            padding: 2rem;
+            border: none;
+            border-radius: 10px;
+            transition: background 0.2s, transform 0.1s;
         }
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            background: white;
-            padding: 20px;
+
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        .option-btn:disabled {
+            background-color: #999;
+            cursor: not-allowed;
+        }
+
+        /* Overlay Kemenangan */
+        #winner-modal {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            z-index: 100;
+        }
+
+        #winner-modal.hidden {
+            display: none;
+        }
+
+        #winner-text {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        #restart-btn {
+            font-size: 20px;
+            padding: 10px 30px;
+            cursor: pointer;
+            background: #e63946;
+            color: white;
+            border: none;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        h2 {
-            color: #800000;
-            border-bottom: 2px solid #800000;
-            padding-bottom: 5px;
-        }
-        .footer {
-            text-align: center;
-            font-size: 0.8rem;
-            margin-top: 50px;
-            color: #777;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <h1>Horas!</h1>
-    <p>Selamat Datang di Portal Budaya Batak</p>
-</header>
+    <div id="rope-container">
+        <div class="rope">
+            <div class="knot" id="rope-knot"></div>
+        </div>
+    </div>
 
-<div class="container">
-    <h2>Sekilas Tentang Suku Batak</h2>
-    <p>Suku Batak merupakan salah satu kelompok etnik terbesar di Indonesia, yang berasal dari Sumatera Utara. Nama "Batak" mencakup beberapa subsuku seperti Batak Toba, Karo, Pakpak, Simalungun, Angkola, dan Mandailing.</p>
+    <div id="players-container">
+        <div id="player1" class="player-panel">
+            <div class="player-title">Pemain Kiri</div>
+            <div class="question" id="q1">?</div>
+            <div class="options-grid" id="options1"></div>
+        </div>
+        
+        <div id="player2" class="player-panel">
+            <div class="player-title">Pemain Kanan</div>
+            <div class="question" id="q2">?</div>
+            <div class="options-grid" id="options2"></div>
+        </div>
+    </div>
 
-    <h2>Nilai Budaya</h2>
-    <p>Budaya Batak dikenal sangat menjunjung tinggi nilai kekeluargaan, marga, dan filosofi <i>Dalihan Na Tolu</i> (Somba Marhula-hula, Elek Marboru, Manat Mardongan Tubu).</p>
+    <div id="winner-modal" class="hidden">
+        <div id="winner-text">Pemain Kiri Menang!</div>
+        <button id="restart-btn" onclick="startGame()">Main Lagi</button>
+    </div>
 
-    <h2>Kesenian & Tradisi</h2>
-    <ul>
-        <li><b>Ulos:</b> Kain tenun tradisional yang memiliki makna sakral.</li>
-        <li><b>Tortor:</b> Tarian tradisional untuk upacara adat dan perayaan.</li>
-        <li><b>Rumah Bolon:</b> Rumah adat dengan arsitektur yang megah dan filosofis.</li>
-    </ul>
-</div>
+    <script>
+        // Variabel Game
+        let ropePosition = 0; // -4 (Kiri menang) s.d +4 (Kanan menang)
+        let correctAnswer = 0;
+        const maxScore = 4;
 
-<div class="footer">
-    <p>&copy; 2026 Website Budaya Batak Pertama Saya</p>
-</div>
+        // Elemen DOM
+        const knot = document.getElementById('rope-knot');
+        const q1 = document.getElementById('q1');
+        const q2 = document.getElementById('q2');
+        const options1 = document.getElementById('options1');
+        const options2 = document.getElementById('options2');
+        const winnerModal = document.getElementById('winner-modal');
+        const winnerText = document.getElementById('winner-text');
 
+        function startGame() {
+            ropePosition = 0;
+            updateRopeVisual();
+            winnerModal.classList.add('hidden');
+            enableButtons(1);
+            enableButtons(2);
+            generateQuestion();
+        }
+
+        function generateQuestion() {
+            // Angka acak 0 - 30
+            let num1 = Math.floor(Math.random() * 31);
+            let num2 = Math.floor(Math.random() * 31);
+            let isAddition = Math.random() > 0.5;
+
+            // Jika pengurangan, pastikan num1 >= num2 agar hasil tidak negatif (untuk versi sederhana)
+            if (!isAddition && num1 < num2) {
+                let temp = num1;
+                num1 = num2;
+                num2 = temp;
+            }
+
+            let operator = isAddition ? '+' : '-';
+            correctAnswer = isAddition ? num1 + num2 : num1 - num2;
+            let questionText = `${num1} ${operator} ${num2}`;
+
+            // Tampilkan soal ke kedua sisi
+            q1.innerText = questionText;
+            q2.innerText = questionText;
+
+            // Buat 4 opsi jawaban (1 benar, 3 salah)
+            let answers = [correctAnswer];
+            while (answers.length < 4) {
+                // Buat pengecoh dengan selisih -5 sampai +5 dari jawaban benar
+                let wrongAnswer = correctAnswer + (Math.floor(Math.random() * 11) - 5);
+                if (wrongAnswer >= 0 && !answers.includes(wrongAnswer)) {
+                    answers.push(wrongAnswer);
+                }
+            }
+
+            // Acak urutan jawaban
+            answers.sort(() => Math.random() - 0.5);
+
+            // Render tombol untuk masing-masing pemain
+            renderButtons(1, answers);
+            renderButtons(2, answers);
+        }
+
+        function renderButtons(playerNum, answers) {
+            const container = playerNum === 1 ? options1 : options2;
+            container.innerHTML = ''; // Bersihkan tombol sebelumnya
+            
+            answers.forEach(ans => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = ans;
+                btn.onclick = () => checkAnswer(playerNum, ans);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(playerNum, answer) {
+            if (answer === correctAnswer) {
+                // Jawaban Benar! Tarik tali.
+                if (playerNum === 1) {
+                    ropePosition -= 1; // Tarik ke kiri
+                } else {
+                    ropePosition += 1; // Tarik ke kanan
+                }
+                
+                updateRopeVisual();
+                checkWinCondition();
+            } else {
+                // Jawaban Salah! Penalti 1 detik (tombol disable)
+                penalizePlayer(playerNum);
+            }
+        }
+
+        function penalizePlayer(playerNum) {
+            const container = playerNum === 1 ? options1 : options2;
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = true);
+            
+            setTimeout(() => {
+                buttons.forEach(btn => btn.disabled = false);
+            }, 1000); // Disable selama 1000 ms (1 detik)
+        }
+
+        function enableButtons(playerNum) {
+            const container = playerNum === 1 ? options1 : options2;
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(btn => btn.disabled = false);
+        }
+
+        function updateRopeVisual() {
+            // Posisi 0 = 50% (Tengah). 
+            // Rentang -4 s.d 4 dikonversi ke persentase letak (10% s.d 90%)
+            // Rumus: 50% + (posisi * 10%)
+            let percentage = 50 + (ropePosition * 10);
+            knot.style.left = `${percentage}%`;
+        }
+
+        function checkWinCondition() {
+            if (ropePosition <= -maxScore) {
+                endGame("Pemain Kiri Menang!");
+            } else if (ropePosition >= maxScore) {
+                endGame("Pemain Kanan Menang!");
+            } else {
+                // Jika belum ada yang menang, lanjut soal berikutnya
+                generateQuestion();
+            }
+        }
+
+        function endGame(message) {
+            winnerText.innerText = message;
+            winnerModal.classList.remove('hidden');
+        }
+
+        // Mulai game saat halaman dimuat
+        window.onload = startGame;
+    </script>
 </body>
 </html>
