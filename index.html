@@ -2,128 +2,29 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Tarik Tambang Matematika</title>
     <style>
         /* --- STYLE (CSS) --- */
         body {
             margin: 0;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            width: 100vw;
             overflow: hidden;
+            background-color: #222;
+            /* Mencegah highlight teks saat tap cepat di layar sentuh */
+            user-select: none; 
+            -webkit-user-select: none;
         }
 
-        /* Area Tali Tarik Tambang */
-        #rope-container {
-            flex: 0 0 120px;
-            background-color: #333;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-bottom: 4px solid #222;
-        }
-
-        .rope {
-            width: 80%;
-            height: 10px;
-            background-color: #d4a373;
-            position: relative;
-            border-radius: 5px;
-        }
-
-        .knot {
-            width: 30px;
-            height: 30px;
-            background-color: #e63946;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%; /* Posisi awal di tengah (0) */
-            transform: translate(-50%, -50%);
-            transition: left 0.3s ease-out; /* Animasi pergeseran tali */
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            border: 3px solid #fff;
-        }
-
-        /* Area Pemain */
-        #players-container {
-            display: flex;
-            flex: 1;
-        }
-
-        .player-panel {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        #player1 {
-            background-color: #a8dadc;
-            border-right: 2px dashed #457b9d;
-        }
-
-        #player2 {
-            background-color: #ffcdb2;
-            border-left: 2px dashed #b5838d;
-        }
-
-        .player-title {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #333;
-        }
-
-        .question {
-            font-size: 48px;
-            font-weight: bold;
-            margin-bottom: 30px;
-            background: #fff;
-            padding: 20px 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            width: 80%;
-            max-width: 300px;
-        }
-
-        .option-btn {
-            font-size: 24px;
-            padding: 15px;
-            cursor: pointer;
-            background-color: #457b9d;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        .option-btn:active {
-            transform: scale(0.95);
-        }
-
-        .option-btn:disabled {
-            background-color: #999;
-            cursor: not-allowed;
-        }
-
-        /* Overlay Kemenangan */
-        #winner-modal {
+        /* Modal Input Nama & Kemenangan */
+        .modal {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.9);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -132,27 +33,200 @@
             z-index: 100;
         }
 
-        #winner-modal.hidden {
+        .modal.hidden {
             display: none;
         }
 
-        #winner-text {
-            font-size: 48px;
+        .modal h1 {
+            font-size: 32px;
             margin-bottom: 20px;
+            text-align: center;
+            color: #f1faee;
         }
 
-        #restart-btn {
+        .input-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .input-group label {
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .input-group input {
+            padding: 12px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-primary {
+            margin-top: 20px;
             font-size: 20px;
-            padding: 10px 30px;
+            padding: 12px 40px;
             cursor: pointer;
             background: #e63946;
             color: white;
             border: none;
             border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #a0202e;
+        }
+        
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* Area Tali Tarik Tambang (Di Tengah Layar) */
+        #rope-container {
+            height: 60px;
+            width: 100%;
+            /* Gradien warna untuk indikator arah tarikan pemain */
+            background: linear-gradient(90deg, #a8dadc 0%, #457b9d 50%, #ffcdb2 100%);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-top: 4px solid #111;
+            border-bottom: 4px solid #111;
+            z-index: 10;
+        }
+
+        .rope {
+            width: 90%;
+            height: 12px;
+            background-color: #8b5a2b; /* Warna tali tambang */
+            position: relative;
+            border-radius: 6px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .knot {
+            width: 36px;
+            height: 36px;
+            background-color: #e63946;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%; 
+            transform: translate(-50%, -50%);
+            transition: left 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+            border: 4px solid #fff;
+        }
+
+        /* Area Pemain (Atas dan Bawah) */
+        .player-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        #player1-panel {
+            background-color: #a8dadc;
+            /* Memutar layar Pemain 1 agar berhadapan */
+            transform: rotate(180deg); 
+        }
+
+        #player2-panel {
+            background-color: #ffcdb2;
+        }
+
+        .player-name-display {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1d3557;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.5);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+
+        .question {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            color: #111;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            width: 90%;
+            max-width: 350px;
+        }
+
+        .option-btn {
+            font-size: 26px;
+            font-weight: bold;
+            padding: 20px 10px;
+            cursor: pointer;
+            background-color: #457b9d;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            /* Optimasi untuk layar sentuh: menghilangkan delay tap */
+            touch-action: manipulation; 
+            box-shadow: 0 5px 0 #1d3557;
+            transition: transform 0.1s, box-shadow 0.1s;
+        }
+
+        #player2-panel .option-btn {
+            background-color: #e5989b;
+            box-shadow: 0 5px 0 #b5838d;
+        }
+
+        .option-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 0 0 transparent !important;
+        }
+
+        .option-btn:disabled {
+            background-color: #999 !important;
+            box-shadow: 0 5px 0 #666 !important;
+            opacity: 0.5;
         }
     </style>
 </head>
 <body>
+
+    <div id="intro-modal" class="modal">
+        <h1>Tarik Tambang<br>Matematika</h1>
+        <div class="input-group">
+            <label for="p1-input" style="color: #a8dadc;">Nama Pemain Atas</label>
+            <input type="text" id="p1-input" placeholder="Pemain 1" value="Pemain 1" maxlength="12">
+        </div>
+        <div class="input-group">
+            <label for="p2-input" style="color: #ffcdb2;">Nama Pemain Bawah</label>
+            <input type="text" id="p2-input" placeholder="Pemain 2" value="Pemain 2" maxlength="12">
+        </div>
+        <button class="btn-primary" onclick="initGame()">Mulai Bertanding!</button>
+    </div>
+
+    <div id="winner-modal" class="modal hidden">
+        <h1 id="winner-text">Pemenang!</h1>
+        <button class="btn-primary" onclick="resetGame()">Main Lagi</button>
+    </div>
+
+    <div id="player1-panel" class="player-panel">
+        <div class="player-name-display" id="p1-name-display">Pemain 1</div>
+        <div class="question" id="q1">?</div>
+        <div class="options-grid" id="options1"></div>
+    </div>
 
     <div id="rope-container">
         <div class="rope">
@@ -160,149 +234,147 @@
         </div>
     </div>
 
-    <div id="players-container">
-        <div id="player1" class="player-panel">
-            <div class="player-title">Pemain Kiri</div>
-            <div class="question" id="q1">?</div>
-            <div class="options-grid" id="options1"></div>
-        </div>
-        
-        <div id="player2" class="player-panel">
-            <div class="player-title">Pemain Kanan</div>
-            <div class="question" id="q2">?</div>
-            <div class="options-grid" id="options2"></div>
-        </div>
-    </div>
-
-    <div id="winner-modal" class="hidden">
-        <div id="winner-text">Pemain Kiri Menang!</div>
-        <button id="restart-btn" onclick="startGame()">Main Lagi</button>
+    <div id="player2-panel" class="player-panel">
+        <div class="player-name-display" id="p2-name-display">Pemain 2</div>
+        <div class="question" id="q2">?</div>
+        <div class="options-grid" id="options2"></div>
     </div>
 
     <script>
         // Variabel Game
-        let ropePosition = 0; // -4 (Kiri menang) s.d +4 (Kanan menang)
+        let ropePosition = 0; 
         let correctAnswer = 0;
-        const maxScore = 4;
+        const maxScore = 4; // Selisih 4 untuk menang
+        let p1Name = "Pemain 1";
+        let p2Name = "Pemain 2";
 
         // Elemen DOM
-        const knot = document.getElementById('rope-knot');
-        const q1 = document.getElementById('q1');
-        const q2 = document.getElementById('q2');
-        const options1 = document.getElementById('options1');
-        const options2 = document.getElementById('options2');
+        const introModal = document.getElementById('intro-modal');
         const winnerModal = document.getElementById('winner-modal');
         const winnerText = document.getElementById('winner-text');
+        const knot = document.getElementById('rope-knot');
+        
+        function initGame() {
+            // Ambil nama dari input
+            p1Name = document.getElementById('p1-input').value.trim() || "Pemain 1";
+            p2Name = document.getElementById('p2-input').value.trim() || "Pemain 2";
+            
+            // Tampilkan nama di layar game
+            document.getElementById('p1-name-display').innerText = p1Name;
+            document.getElementById('p2-name-display').innerText = p2Name;
 
-        function startGame() {
+            // Sembunyikan intro dan mulai
+            introModal.classList.add('hidden');
+            resetGame();
+        }
+
+        function resetGame() {
             ropePosition = 0;
             updateRopeVisual();
             winnerModal.classList.add('hidden');
-            enableButtons(1);
-            enableButtons(2);
             generateQuestion();
         }
 
         function generateQuestion() {
-            // Angka acak 0 - 30
+            enableButtons(1);
+            enableButtons(2);
+
             let num1 = Math.floor(Math.random() * 31);
             let num2 = Math.floor(Math.random() * 31);
             let isAddition = Math.random() > 0.5;
 
-            // Jika pengurangan, pastikan num1 >= num2 agar hasil tidak negatif (untuk versi sederhana)
+            // Cegah hasil negatif pada pengurangan
             if (!isAddition && num1 < num2) {
-                let temp = num1;
-                num1 = num2;
-                num2 = temp;
+                let temp = num1; num1 = num2; num2 = temp;
             }
 
             let operator = isAddition ? '+' : '-';
             correctAnswer = isAddition ? num1 + num2 : num1 - num2;
             let questionText = `${num1} ${operator} ${num2}`;
 
-            // Tampilkan soal ke kedua sisi
-            q1.innerText = questionText;
-            q2.innerText = questionText;
+            document.getElementById('q1').innerText = questionText;
+            document.getElementById('q2').innerText = questionText;
 
-            // Buat 4 opsi jawaban (1 benar, 3 salah)
             let answers = [correctAnswer];
             while (answers.length < 4) {
-                // Buat pengecoh dengan selisih -5 sampai +5 dari jawaban benar
                 let wrongAnswer = correctAnswer + (Math.floor(Math.random() * 11) - 5);
                 if (wrongAnswer >= 0 && !answers.includes(wrongAnswer)) {
                     answers.push(wrongAnswer);
                 }
             }
 
-            // Acak urutan jawaban
             answers.sort(() => Math.random() - 0.5);
 
-            // Render tombol untuk masing-masing pemain
             renderButtons(1, answers);
             renderButtons(2, answers);
         }
 
         function renderButtons(playerNum, answers) {
-            const container = playerNum === 1 ? options1 : options2;
-            container.innerHTML = ''; // Bersihkan tombol sebelumnya
+            const container = document.getElementById(`options${playerNum}`);
+            container.innerHTML = ''; 
             
             answers.forEach(ans => {
                 const btn = document.createElement('button');
                 btn.className = 'option-btn';
                 btn.innerText = ans;
-                btn.onclick = () => checkAnswer(playerNum, ans);
+                
+                // Gunakan ontouchstart untuk respon mobile yang jauh lebih cepat dari onclick
+                btn.ontouchstart = (e) => {
+                    e.preventDefault(); // Mencegah event click ganda di mobile
+                    if(!btn.disabled) checkAnswer(playerNum, ans);
+                };
+                // Fallback untuk klik mouse jika dites di PC
+                btn.onmousedown = (e) => {
+                    if(!btn.disabled) checkAnswer(playerNum, ans);
+                };
+
                 container.appendChild(btn);
             });
         }
 
         function checkAnswer(playerNum, answer) {
             if (answer === correctAnswer) {
-                // Jawaban Benar! Tarik tali.
-                if (playerNum === 1) {
-                    ropePosition -= 1; // Tarik ke kiri
-                } else {
-                    ropePosition += 1; // Tarik ke kanan
-                }
-                
+                // Tarik ke kiri (negatif) untuk P1, kanan (positif) untuk P2
+                ropePosition += (playerNum === 1) ? -1 : 1; 
                 updateRopeVisual();
                 checkWinCondition();
             } else {
-                // Jawaban Salah! Penalti 1 detik (tombol disable)
                 penalizePlayer(playerNum);
             }
         }
 
         function penalizePlayer(playerNum) {
-            const container = playerNum === 1 ? options1 : options2;
+            const container = document.getElementById(`options${playerNum}`);
             const buttons = container.querySelectorAll('button');
             buttons.forEach(btn => btn.disabled = true);
             
+            // Getar HP sedikit jika salah (hanya bekerja di beberapa device Android)
+            if (navigator.vibrate) navigator.vibrate(200);
+
             setTimeout(() => {
                 buttons.forEach(btn => btn.disabled = false);
-            }, 1000); // Disable selama 1000 ms (1 detik)
+            }, 1000); 
         }
 
         function enableButtons(playerNum) {
-            const container = playerNum === 1 ? options1 : options2;
+            const container = document.getElementById(`options${playerNum}`);
             const buttons = container.querySelectorAll('button');
             buttons.forEach(btn => btn.disabled = false);
         }
 
         function updateRopeVisual() {
-            // Posisi 0 = 50% (Tengah). 
-            // Rentang -4 s.d 4 dikonversi ke persentase letak (10% s.d 90%)
-            // Rumus: 50% + (posisi * 10%)
-            let percentage = 50 + (ropePosition * 10);
+            // Posisi 0 = 50% (Tengah). Skala pergeseran disesuaikan dengan maxScore
+            // Karena maxScore = 4, maka 1 poin bernilai 12.5% pergeseran (4 * 12.5% = 50%)
+            let percentage = 50 + (ropePosition * 12.5);
             knot.style.left = `${percentage}%`;
         }
 
         function checkWinCondition() {
             if (ropePosition <= -maxScore) {
-                endGame("Pemain Kiri Menang!");
+                endGame(`${p1Name} Menang! 🎉`);
             } else if (ropePosition >= maxScore) {
-                endGame("Pemain Kanan Menang!");
+                endGame(`${p2Name} Menang! 🎉`);
             } else {
-                // Jika belum ada yang menang, lanjut soal berikutnya
                 generateQuestion();
             }
         }
@@ -310,10 +382,8 @@
         function endGame(message) {
             winnerText.innerText = message;
             winnerModal.classList.remove('hidden');
+            if (navigator.vibrate) navigator.vibrate([300, 100, 300]); // Getar kemenangan
         }
-
-        // Mulai game saat halaman dimuat
-        window.onload = startGame;
     </script>
 </body>
 </html>
